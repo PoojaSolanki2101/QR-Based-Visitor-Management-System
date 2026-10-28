@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Visitor History</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Visitor History</h1>
+    <!-- Date Filter -->
+<form action="/history/filter" method="get" style="margin: 20px 0;">
+    <label for="date">Select Check-In Date:</label>
+
+    <input
+        type="date"
+        id="date"
+        name="date"
+        th:value="${selectedDate}"
+        required>
+
+    <button type="submit">Filter</button>
+
+    <a href="/history">Show All</a>
+</form>
+
+    <a href="/visitors" class="back-button">
+        Back to Dashboard
+    </a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Person to Meet</th>
+                <th>Purpose</th>
+                <th>Check-In Time</th>
+                <th>Check-Out Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="visitor : ${visitors}">
+                <td th:text="${visitor.id}"></td>
+                <td th:text="${visitor.name}"></td>
+                <td th:text="${visitor.mobile}"></td>
+                <td th:text="${visitor.personToMeet}"></td>
+                <td th:text="${visitor.purpose}"></td>
+
+                <td th:text="${visitor.checkInTime != null
+                    ? #temporals.format(visitor.checkInTime, 'dd-MM-yyyy HH:mm:ss')
+                    : 'N/A'}"></td>
+
+                <td th:text="${visitor.checkOutTime != null
+                    ? #temporals.format(visitor.checkOutTime, 'dd-MM-yyyy HH:mm:ss')
+                    : 'Not Checked Out'}"></td>
+
+                <td th:text="${visitor.status}"></td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(visitors)}">
+                <td colspan="8" class="empty-message">
+                    No visitor history found.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

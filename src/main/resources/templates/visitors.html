@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Visitor Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1d3557;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #1d4ed8;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+    .scan-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background: #16a34a;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    margin-left: 10px;
+}
+
+.scan-button:hover {
+    background: #15803d;
+}
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1d3557;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f6fc;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .qr-image {
+            width: 100px;
+            height: 100px;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .inside {
+            color: green;
+        }
+
+        .checked-out {
+            color: #dc2626;
+        }
+
+        .action-button {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 3px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .checkin {
+            background: #16a34a;
+        }
+
+        .checkout {
+            background: #dc2626;
+        }
+
+
+        /* Dashboard Statistics */
+.stats-container {
+    display: flex;
+    gap: 20px;
+    margin: 25px 0;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 25px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.total-card {
+    background: #2563eb;
+}
+
+.inside-card {
+    background: #16a34a;
+}
+
+.checkout-card {
+    background: #dc2626;
+}
+
+.search-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.search-container input {
+    padding: 10px;
+    width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-container a {
+    margin-left: 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+/* Today's Visitors Card */
+.today-card {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.today-card h3 {
+    color: #1565c0;
+    margin-bottom: 10px;
+}
+
+.today-card p {
+    color: #1565c0;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Visitor Management Dashboard</h1>
+    <form th:action="@{/logout}" method="post" style="text-align: right; margin-bottom: 20px;">
+    <button type="submit"
+            style="background-color: #dc3545;
+                   color: white;
+                   padding: 10px 20px;
+                   border: none;
+                   border-radius: 5px;
+                   cursor: pointer;">
+        Logout
+    </button>
+</form>
+    <!-- Search Visitor -->
+<div class="search-container">
+    <form action="/search" method="get">
+        <input
+            type="text"
+            name="name"
+            placeholder="Enter visitor name..."
+            th:value="${searchName}"
+            required>
+
+        <button type="submit">Search</button>
+
+        <a href="/visitors">Show All Visitors</a>
+    </form>
+</div>
+
+    <!-- Dashboard Statistics -->
+<div class="stats-container">
+
+    <div class="stat-card total-card">
+        <h3>Total Visitors</h3>
+        <p th:text="${totalVisitors}">0</p>
+    </div>
+
+    <div class="stat-card inside-card">
+        <h3>Currently Inside</h3>
+        <p th:text="${insideVisitors}">0</p>
+    </div>
+
+    <div class="stat-card checkout-card">
+        <h3>Checked-Out Visitors</h3>
+        <p th:text="${checkedOutVisitors}">0</p>
+    </div>
+    <!-- Today's Visitors -->
+<div class="stat-card today-card">
+    <h3>Today's Visitors</h3>
+    <p th:text="${todayVisitors}">0</p>
+</div>
+</div>
+
+    <a href="/register" class="button">+ Register New Visitor</a>
+
+    <a href="/scan" class="scan-button">📷 Scan QR Code</a>
+    <a href="/history" class="scan-button">
+    Visitor History
+</a>
+<a href="/export/excel" class="scan-button">
+    📥 Download Excel
+</a>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Email</th>
+            <th>Person to Meet</th>
+            <th>Purpose</th>
+            <th>Check-In Time</th>
+            <th>Check-Out Time</th>
+            <th>Status</th>
+            <th>QR Code</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="visitor : ${visitors}">
+
+            <td th:text="${visitor.id}"></td>
+
+            <td th:text="${visitor.name}"></td>
+
+            <td th:text="${visitor.mobile}"></td>
+
+            <td th:text="${visitor.email}"></td>
+
+            <td th:text="${visitor.personToMeet}"></td>
+
+            <td th:text="${visitor.purpose}"></td>
+
+            <td th:text="${visitor.checkInTime}"></td>
+
+            <td th:text="${visitor.checkOutTime != null ? visitor.checkOutTime : '-'}"></td>
+
+            <td>
+                <span class="status"
+                      th:classappend="${visitor.status == 'INSIDE'} ? ' inside' : ' checked-out'"
+                      th:text="${visitor.status}">
+                </span>
+            </td>
+
+            <td>
+                <img class="qr-image"
+                     th:src="'data:image/png;base64,' + ${visitor.qrCode}"
+                     alt="Visitor QR Code">
+                <br>
+                <small th:text="'Visitor ID: ' + ${visitor.id}"></small>
+            </td>
+
+            <td>
+                <a th:if="${visitor.status == 'CHECKED_OUT'}"
+                   th:href="@{/checkin/{id}(id=${visitor.id})}"
+                   class="action-button checkin">
+                    Check-In
+                </a>
+
+                <a th:if="${visitor.status == 'INSIDE'}"
+                   th:href="@{/checkout/{id}(id=${visitor.id})}"
+                   class="action-button checkout">
+                    Check-Out
+                </a>
+            </td>
+
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(visitors)}">
+            <td colspan="11" class="empty">
+                No visitors registered yet.
+            </td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>
